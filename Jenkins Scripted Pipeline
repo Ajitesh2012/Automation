@@ -3,7 +3,7 @@ node {
    git 'https://github.com/bkimminich/juice-shop.git'
   }
   stage('Snyk Scan'){
-    sh label: '', script: '''snyk auth 9fdd4d38-ed37-44e5-a4d2-1dbe66dff902 snyk test'''
+    sh label: '', script: '''snyk auth [add your token] snyk test'''
   }
   stage('RetireJS Scan'){
     sh label: '', script: 'retire --exitwith 0 --outputpath /tmp/RJScan.json'
