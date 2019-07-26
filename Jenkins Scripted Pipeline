@@ -1,0 +1,23 @@
+node {
+  stage('SCM') {
+   git 'https://github.com/bkimminich/juice-shop.git'
+  }
+  stage('Snyk Scan'){
+    sh label: '', script: '''snyk auth 9fdd4d38-ed37-44e5-a4d2-1dbe66dff902 snyk test'''
+  }
+  stage('RetireJS Scan'){
+    sh label: '', script: 'retire --exitwith 0 --outputpath /tmp/RJScan.json'
+  }
+  stage('SonarQube analysis') {
+    def scannerHome = tool 'SonarQube';
+    withSonarQubeEnv('SonarQubeServer') { // If you have configured more than one global server connection, you can specify its name
+      sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=JuiceShop"
+    }
+  }
+  stage('Zap Scan'){
+      sh label: '', script: '''/opt/zaproxy/zap.sh -daemon -quickurl http://localhost:3000 -quickout /tmp/Reports.xml'''
+  }
+  stage('Scan stage completed')
+  {
+}
+}
